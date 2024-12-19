@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encontre o Paquetá</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .card {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+            text-align: center;
+            font-size: 48px;
+            cursor: pointer;
+            border: 2px solid #000;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .correct {
+            border-color: green;
+        }
+        .wrong {
+            border-color: red;
+        }
+        #buttons {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 24px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        #rounds {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Encontre o Paquetá!</h1>
+<div id="cards">
+    <div class="card" onclick="guess(0)">❓</div>
+    <div class="card" onclick="guess(1)">❓</div>
+    <div class="card" onclick="guess(2)">❓</div>
+    <div class="card" onclick="guess(3)">❓</div>
+</div>
+
+<div id="rounds">Rodadas Restantes: <span id="remainingRounds">10</span></div>
+
+<div id="buttons">
+    <button onclick="playAgain()">Jogar Novamente</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+    let paquetáPosition = Math.floor(Math.random() * 4);
+    let attempts = 0;
+    let successes = 0;
+    let errors = 0;
+    const totalRounds = 10;
+    let remainingRounds = totalRounds;
+
+    function guess(position) {
+        if (remainingRounds <= 0) return; // Não faz nada se as rodadas acabaram
+
+        attempts++;
+        const cards = document.querySelectorAll(".card");
+
+        // Revelar todas as cartas
+        cards.forEach((card, index) => {
+            if (index === paquetáPosition) {
+                card.innerHTML = '<img src="https://odia.ig.com.br/_midias/jpg/2024/05/24/paqueta-32937939.jpg" alt="Paquetá" width="100">';
+                card.classList.add("correct");
+                if (index === position) {
+                    successes++;
+                }
+            } else {
+                card.innerHTML = '<img src="https://sistemagestaoweb.com.br/wp-content/uploads/2020/06/erro.png" alt="Erro" width="100">';
+                if (index === position) {
+                    card.classList.add("wrong");
+                    errors++;
+                }
+            }
+            card.style.pointerEvents = 'none'; // Desativa o clique nas cartas após a tentativa
+        });
+
+        remainingRounds--;
+        document.getElementById("remainingRounds").textContent = remainingRounds;
+
+        // Atualiza o resultado na tela
+        document.getElementById("result").innerHTML = `Acertos: ${successes} | Erros: ${errors}`;
+
+        // Verifica se as rodadas acabaram
+        if (remainingRounds === 0) {
+            showFinalResult();
+        }
+    }
+
+    function resetGame() {
+        paquetáPosition = Math.floor(Math.random() * 4);
+    }
+
+    function playAgain() {
+        if (remainingRounds <= 0) return; // Não faz nada se as rodadas acabaram
+        
+        resetGame();
+        const cards = document.querySelectorAll(".card");
+        cards.forEach(card => {
+            card.innerHTML = "❓";
+            card.classList.remove("correct", "wrong"); // Remove as classes ao reiniciar
+        });
+        cards.forEach(card => card.style.pointerEvents = 'auto'); // Reativa o clique nas cartas
+        
+        attempts++; // Contabiliza a tentativa
+    }
+
+    function showFinalResult() {
+        const performance = ((successes / totalRounds) * 100).toFixed(2);
+        document.getElementById("result").innerHTML = `Jogo finalizado! Acertos: ${successes} | Erros: ${errors} | Desempenho: ${performance}%`;
+        document.getElementById("remainingRounds").textContent = 0; // Define rodadas restantes para 0
+    }
+</script>
+
+</body>
+</html>
